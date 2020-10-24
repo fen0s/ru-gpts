@@ -33,7 +33,7 @@ from tqdm import tqdm, trange
 from transformers import (
     MODEL_WITH_LM_HEAD_MAPPING,
     WEIGHTS_NAME,
-    AdamW,
+    AdaFactor,
     AutoConfig,
     AutoModelWithLMHead,
     AutoTokenizer,
@@ -232,7 +232,7 @@ def train(args, train_dataset, model: PreTrainedModel, tokenizer: PreTrainedToke
         },
         {"params": [p for n, p in model.named_parameters() if any(nd in n for nd in no_decay)], "weight_decay": 0.0},
     ]
-    optimizer = AdamW(optimizer_grouped_parameters, lr=args.learning_rate, eps=args.adam_epsilon)
+    optimizer = AdaFactor(optimizer_grouped_parameters, lr=args.learning_rate, eps=args.adam_epsilon, scale_parameter=False, relative_step=False)
     scheduler = get_linear_schedule_with_warmup(
         optimizer, num_warmup_steps=args.warmup_steps, num_training_steps=t_total
     )
